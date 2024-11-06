@@ -1,7 +1,8 @@
+package com.example.uwazitek
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -14,97 +15,88 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.uwazitek.R
+import androidx.navigation.NavHostController
 
 @Composable
-fun IntroScreen1(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Top Section (2/3 of the screen)
+fun IntroScreen1(navController: NavHostController) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .weight(2f)
-                .fillMaxWidth(),
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Centered Image
-            Image(
-                painter = painterResource(id = R.drawable.firstsplashscreenimageone), // Replace with your image
-                contentDescription = "App Logo",
+            // Top Section with Image and Text
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Main Text
-            Text(
-                text = "The Go-To Destination for Managing Health Insurance Plans",
-                color = Color.Black,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Terms and Conditions Text
-            Text(
-                text = "By proceeding, you agree to the terms and conditions",
-                color = Color.Gray,
-                fontSize = 12.sp
-            )
-            Text(
-                text = "terms and conditions",
-                color = Color.Gray,
-                fontSize = 12.sp,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { /* Action on terms click */ }
-            )
-        }
-
-        // Bottom Section (1/3 of the screen) with Buttons
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Get Started Button
-            Button(
-                onClick = { /* Action for Get Started */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
+                    .weight(2f)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Get Started")
+                Image(
+                    painter = painterResource(id = R.drawable.firstsplashscreenimageone), // Replace if needed
+                    contentDescription = "App Logo",
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "The Go-To Destination for Managing Health Insurance Plans",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "By proceeding, you agree to the terms and conditions",
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable { /* Handle terms click */ }
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Login Button
-            Button(
-                onClick = { /* Action for Login */ },
+            // Bottom Section with Buttons
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFADD8E6), // Light blue background
-                    contentColor = Color.Black
-                )
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("Login")
+                Button(
+                    onClick = { /* Handle Get Started click */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Get Started")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { /* Handle Login click */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFADD8E6),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Login")
+                }
             }
         }
     }
