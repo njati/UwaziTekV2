@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,5 +62,7 @@ dependencies {
     implementation (libs.androidx.material) // Material Design components
     implementation (libs.ui.tooling.preview) // Preview support
     implementation (libs.androidx.lifecycle.runtime.ktx.v262)
-    implementation (libs.androidx.activity.compose.v161)} // Activity Compose integration
+    implementation (libs.androidx.activity.compose.v161)
+    implementation (libs.androidx.navigation.compose)
+} // Activity Compose integration
 

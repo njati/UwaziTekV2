@@ -1,47 +1,50 @@
-package com.example.uwazitek
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.uwazitek.ui.theme.UwaziTekTheme
+import androidx.navigation.NavHostController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            UwaziTekTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            HealthInsuranceAppTheme {
+                val navController = rememberNavController()
+                SetupNavGraph(navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun SetupNavGraph(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "intro1") {
+        composable("intro1") { IntroScreen1(navController) }
+        composable("intro2") { IntroScreen2(navController) }
+        composable("login") { LoginScreen() }
+    }
 }
 
-@Preview(showBackground = true)
+// Sample placeholder for IntroScreen1, IntroScreen2, and LoginScreen composables
 @Composable
-fun GreetingPreview() {
-    UwaziTekTheme {
-        Greeting("Android")
+fun IntroScreen1(navController: NavHostController) {
+    Surface {
+        // Replace with actual UI for IntroScreen1
+    }
+}
+
+@Composable
+fun IntroScreen2(navController: NavHostController) {
+    Surface {
+        // Replace with actual UI for IntroScreen2
+    }
+}
+
+@Composable
+fun LoginScreen() {
+    Surface {
+        // Replace with actual UI for LoginScreen
     }
 }
