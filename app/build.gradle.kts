@@ -64,5 +64,9 @@ dependencies {
     implementation (libs.androidx.lifecycle.runtime.ktx.v262)
     implementation (libs.androidx.activity.compose.v161)
     implementation (libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.compose.v260)
+    implementation(libs.androidx.navigation.compose) // Update to latest version if necessary
+
+
 } // Activity Compose integration
 

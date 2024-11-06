@@ -1,4 +1,3 @@
-// Theme.kt
 package com.example.healthinsuranceapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
