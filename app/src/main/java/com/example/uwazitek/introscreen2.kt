@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
-fun IntroScreen1(navController: NavHostController) {
+fun IntroScreen2(navController: NavHostController) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -35,7 +35,7 @@ fun IntroScreen1(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.firstsplashscreenimageone), // Replace if needed
+                    painter = painterResource(id = R.drawable.firstsplashscreenimagetwo), // Replace if needed
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -43,6 +43,7 @@ fun IntroScreen1(navController: NavHostController) {
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
                     text = "The Go-To Destination for Managing Health Insurance Plans",
                     color = Color.Black,
@@ -61,7 +62,7 @@ fun IntroScreen1(navController: NavHostController) {
                 )
             }
 
-            // Bottom Section with Buttons
+            // Bottom Section with Next Button
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -70,7 +71,7 @@ fun IntroScreen1(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { /* Handle Get Started click */ },
+                    onClick = { navController.navigate("nextScreen") }, // Replace "nextScreen" with your target
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),
@@ -79,22 +80,7 @@ fun IntroScreen1(navController: NavHostController) {
                         contentColor = Color.Black
                     )
                 ) {
-                    Text("Get Started")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = { /* Handle Login click */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFADD8E6),
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text("Login")
+                    Text("Next")
                 }
             }
         }

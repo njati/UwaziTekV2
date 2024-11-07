@@ -3,7 +3,6 @@ package com.example.uwazitek
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,7 +26,7 @@ class MainActivity : ComponentActivity() {
 fun SetupNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "intro1") {
         composable("intro1") { IntroScreen1(navController) }
-//        composable("intro2") { IntroScreen2(navController) }
+        composable("intro2") { IntroScreen2(navController) }
 //        composable("login") { LoginScreen() }
     }
 }
