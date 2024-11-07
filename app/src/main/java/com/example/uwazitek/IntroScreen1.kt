@@ -85,7 +85,7 @@ fun IntroScreen1(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Handle Login click */ },
+                    onClick = { navController.navigate("intro2") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),

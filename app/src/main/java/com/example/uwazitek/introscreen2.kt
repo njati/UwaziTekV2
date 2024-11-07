@@ -35,7 +35,7 @@ fun IntroScreen2(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.firstsplashscreenimagetwo), // Replace if needed
+                    painter = painterResource(id = R.drawable.firstsplashscreenimagetwo),
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -71,7 +71,7 @@ fun IntroScreen2(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { navController.navigate("nextScreen") }, // Replace "nextScreen" with your target
+                    onClick = { navController.navigate("dashboard") }, // Replace "nextScreen" with your target
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),
