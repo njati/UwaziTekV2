@@ -3,6 +3,7 @@ package com.example.uwazitek
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,8 +17,11 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,106 +46,195 @@ class DashboardActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)  // Make sure only this is used if required
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Scaffold with a TopBar and Drawer
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DrawerContent { scope.launch { drawerState.close() } }
+    // Track current route
+    var currentRoute by remember { mutableStateOf("pending_claims") }
+
+    // Update currentRoute when the navigation destination changes
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            currentRoute = destination.route ?: "pending_claims"
         }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Dashboard") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "Menu")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* Handle search click */ }) {
-                            Icon(Icons.Filled.Search, contentDescription = "Search")
-                        }
-                    }
-                )
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                DrawerContent(navController = navController, onCloseDrawer = { scope.launch { drawerState.close() } })
             },
-            bottomBar = {
-                BottomNavigationBar(navController)
-            },
-            content = { paddingValues ->
-                // Setting up the NavHost for managing different composable destinations
-                NavHost(
-                    navController = navController,             // Controller to handle navigation
-                    startDestination = "pending_claims"        // Initial screen shown when Scaffold is loaded
-                ) {
-                    // Composable destination for Pending Claims screen
-                    composable(route = "pending_claims") {
-                        ClaimsOverviewScreen(
-                            title = "Pending Claims",           // Screen title displayed in ClaimsOverviewScreen
-                            claims = listOf(
-                                Claim("claim#7505", "$5000"),   // Example claims data for Pending Claims
-                                Claim("claim#8448", "$2000")
-                            ),
-                            paddingValues = paddingValues       // Pass padding to avoid overlapping with top/bottom bars
-                        )
-                    }
+            modifier = Modifier.background(Color.White)
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("UwaziTek", color = Color.White)
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                            }
+                        },
+                        actions = {
+                            if (currentRoute != "settings") {
+                                IconButton(onClick = { /* Handle search click */ }) {
+                                    Icon(Icons.Default.Search, contentDescription = "Search")
+                                }
+                            }
+                        }
+                    )
+                },
+                bottomBar = {
+                    BottomNavigationBar(navController)
+                },
+                containerColor = Color.White,
+                content = { paddingValues ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "pending_claims"
+                    ) {
+                        composable(route = "pending_claims") {
+                            ClaimsOverviewScreen(
+                                title = "Pending Claims",
+                                claims = listOf(
+                                    Claim("claim#7505", "$5000"),
+                                    Claim("claim#8448", "$2000")
+                                ),
+                                paddingValues = paddingValues
+                            )
+                        }
 
-                    // Composable destination for Approved Claims screen
-                    composable(route = "approved_claims") {
-                        ClaimsOverviewScreen(
-                            title = "Approved Claims",
-                            claims = listOf(
-                                Claim("claim#4649", "$1500"),
-                                Claim("claim#8754", "N/A")
-                            ),
-                            paddingValues = paddingValues
-                        )
-                    }
+                        composable(route = "approved_claims") {
+                            ClaimsOverviewScreen(
+                                title = "Approved Claims",
+                                claims = listOf(
+                                    Claim("claim#4649", "$1500"),
+                                    Claim("claim#8754", "N/A")
+                                ),
+                                paddingValues = paddingValues
+                            )
+                        }
 
-                    // Composable destination for Rejected Claims screen
-                    composable(route = "rejected_claims") {
-                        ClaimsOverviewScreen(
-                            title = "Rejected Claims",
-                            claims = listOf(
-                                Claim("claim#1030", "$3000"),
-                                Claim("claim#2099", "$800")
-                            ),
-                            paddingValues = paddingValues
-                        )
-                    }
+                        composable(route = "rejected_claims") {
+                            ClaimsOverviewScreen(
+                                title = "Rejected Claims",
+                                claims = listOf(
+                                    Claim("claim#1030", "$3000"),
+                                    Claim("claim#2099", "$800")
+                                ),
+                                paddingValues = paddingValues
+                            )
+                        }
 
-                    // Composable destination for Settings screen
-                    composable(route = "settings") {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                                .padding(16.dp)
-                        ) {
-                            Text(text = "Settings Screen")      // Placeholder content for the Settings screen
+                        composable(route = "settings") {
+                            SettingsScreen(paddingValues)
                         }
                     }
                 }
-            }
+            )
+        }
+    }
+}
 
 
+
+// Updated Settings screen function
+@Composable
+fun SettingsScreen(paddingValues: PaddingValues) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(16.dp)
+    ) {
+        // Profile Picture Section
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(RoundedCornerShape(50.dp))
+                .background(Color.Gray)
+                .clickable { /* Handle profile picture update */ },
+                contentAlignment = Alignment.Center
+        ) {
+            Text("Profile", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Update Password Option
+        SettingsOption(
+            label = "Update Password",
+            onClick = { /* Navigate to update password screen */ }
         )
+
+        // Contact Support Chat Button
+        SettingsOption(
+            label = "Contact Support",
+            onClick = { /* Open chat for support */ }
+        )
+
+        // Logout Button
+        Button(
+            onClick = { /* Handle logout functionality */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        ) {
+            Text("Logout", color = Color.White)
+        }
+    }
+}
+
+// Helper composable for each settings option
+@Composable
+fun SettingsOption(label: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+            .clickable { onClick() }
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(Icons.Filled.Settings, contentDescription = "Go to $label")
     }
 }
 
 @Composable
-fun DrawerContent(onCloseDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+fun DrawerContent(navController: NavController, onCloseDrawer: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight(2 / 3f)
+            .fillMaxWidth(0.5f)
+            .padding(vertical = 16.dp)
+            .background(Color.White)
+    ) {
         Text(
-            text = "Dashboard",
+            text = "UwaziTek",
             fontWeight = FontWeight.Bold,
+            color = Color.Black,
             fontSize = 18.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,28 +246,40 @@ fun DrawerContent(onCloseDrawer: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clickable { onCloseDrawer() }
+                .clickable {
+                    navController.navigate("pending_claims") // Navigate to Pending Claims
+                    onCloseDrawer()
+                }
         )
         Text(
             text = "Approved",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clickable { onCloseDrawer() }
+                .clickable {
+                    navController.navigate("approved_claims") // Navigate to Approved Claims
+                    onCloseDrawer()
+                }
         )
         Text(
             text = "Closed",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clickable { onCloseDrawer() }
+                .clickable {
+                    navController.navigate("rejected_claims") // Navigate to Rejected Claims
+                    onCloseDrawer()
+                }
         )
         Text(
             text = "Settings",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clickable { onCloseDrawer() }
+                .clickable {
+                    navController.navigate("settings") // Navigate to Settings
+                    onCloseDrawer()
+                }
         )
     }
 }
@@ -184,7 +289,7 @@ fun ClaimsOverviewScreen(title: String, claims: List<Claim>, paddingValues: Padd
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)  // Applying paddingValues here
+            .padding(paddingValues)
             .padding(16.dp)
     ) {
         Text(
@@ -194,7 +299,6 @@ fun ClaimsOverviewScreen(title: String, claims: List<Claim>, paddingValues: Padd
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Display Claims Cards
         claims.forEach { claim ->
             ClaimsCard(sectionTitle = claim.id, totalAmount = claim.amount)
         }
@@ -259,40 +363,30 @@ fun ClaimsCard(sectionTitle: String, totalAmount: String) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     BottomNavigation(
-        backgroundColor = Color(0xFF6200EE), // Customize as needed
         contentColor = Color.White
     ) {
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.List, contentDescription = "Pending Claims") },
-//            label = { Text("Pending") },
-            selected = false, // You can manage the selected state based on navigation
-            onClick = {
-                navController.navigate("pending_claims") // Navigate to Pending Claims Screen
-            }
+            selected = false,
+            onClick = { navController.navigate("pending_claims") }
         )
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.CheckCircle, contentDescription = "Approved Claims") },
-//            label = { Text("Approved") },
             selected = false,
-            onClick = {
-                navController.navigate("approved_claims") // Navigate to Approved Claims Screen
-            }
+            onClick = { navController.navigate("approved_claims") }
         )
         BottomNavigationItem(
-            icon = { Icon(Icons.Filled.CheckCircle, contentDescription = "Rejected Claims") }, // Using Block instead of Cancel
-//            label = { Text("Rejected") },
+            icon = { Icon(painter = painterResource(id = R.drawable.baseline_cancel_24), contentDescription = "Rejected Claims") },
             selected = false,
-            onClick = {
-                navController.navigate("rejected_claims") // Navigate to Rejected Claims Screen
-            }
+            onClick = { navController.navigate("rejected_claims") }
         )
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-//            label = { Text("Settings") },
             selected = false,
-            onClick = {
-                navController.navigate("settings") // Navigate to Settings Screen
-            }
+            onClick = { navController.navigate("settings") }
         )
     }
 }
+
+
+

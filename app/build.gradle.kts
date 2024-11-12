@@ -65,8 +65,7 @@ dependencies {
     implementation (libs.androidx.activity.compose.v161)
     implementation (libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.compose.v260)
-    implementation(libs.androidx.navigation.compose) // Update to latest version if necessary
-
-
-} // Activity Compose integration
-
+    implementation(libs.androidx.navigation.compose)
+    implementation (libs.material3)
+    implementation (libs.androidx.material.v100)
+}
