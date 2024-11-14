@@ -68,4 +68,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation (libs.material3)
     implementation (libs.androidx.material.v100)
+    implementation (libs.androidx.material.v150)
+    implementation (libs.material3.v100)
+    implementation (libs.androidx.material)
 }

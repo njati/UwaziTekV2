@@ -36,6 +36,16 @@ data class Claim(
     val id: String,
     val amount: String
 )
+//Services
+data class HealthService(
+    val name: String,
+    val hospital: String,
+    val location: String,
+    val hours: String,
+    val cost: String,
+    val phone: String,
+    val rating: Float
+)
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +66,9 @@ fun DashboardScreen() {
     // Track current route
     var currentRoute by remember { mutableStateOf("pending_claims") }
 
+    // Track search query
+    var searchQuery by remember { mutableStateOf("") }
+
     // Update currentRoute when the navigation destination changes
     LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -73,7 +86,7 @@ fun DashboardScreen() {
             drawerContent = {
                 DrawerContent(navController = navController, onCloseDrawer = { scope.launch { drawerState.close() } })
             },
-            modifier = Modifier.background(Color.White)
+            modifier = Modifier.background(Color.Gray)
         ) {
             Scaffold(
                 topBar = {
@@ -83,7 +96,12 @@ fun DashboardScreen() {
                                 modifier = Modifier.fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("UwaziTek", color = Color.White)
+                                if (currentRoute != "settings") {
+                                    Text("UwaziTek", color = Color.White)
+                                } else {
+                                    // Leave blank or put another title when on the Settings screen
+                                    Text("", color = Color.White)
+                                }
                             }
                         },
                         navigationIcon = {
@@ -93,11 +111,33 @@ fun DashboardScreen() {
                         },
                         actions = {
                             if (currentRoute != "settings") {
-                                IconButton(onClick = { /* Handle search click */ }) {
-                                    Icon(Icons.Default.Search, contentDescription = "Search")
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(end = 16.dp)
+                                ) {
+                                    IconButton(onClick = { /* Handle search click */ }) {
+                                        Icon(
+                                            Icons.Default.Search,
+                                            contentDescription = "Search",
+                                            tint = Color.White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp)) // Adds space between icons
+                                    TextField(
+                                        value = searchQuery,
+                                        onValueChange = { searchQuery = it },
+                                        placeholder = { Text("Search Claims", color = Color.Gray) },
+                                        modifier = Modifier
+                                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                                            .fillMaxWidth(0.75f) // Adjusts TextField width to fit better
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                         }
+
                     )
                 },
                 bottomBar = {
@@ -115,7 +155,7 @@ fun DashboardScreen() {
                                 claims = listOf(
                                     Claim("claim#7505", "$5000"),
                                     Claim("claim#8448", "$2000")
-                                ),
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
                                 paddingValues = paddingValues
                             )
                         }
@@ -126,7 +166,7 @@ fun DashboardScreen() {
                                 claims = listOf(
                                     Claim("claim#4649", "$1500"),
                                     Claim("claim#8754", "N/A")
-                                ),
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
                                 paddingValues = paddingValues
                             )
                         }
@@ -137,11 +177,13 @@ fun DashboardScreen() {
                                 claims = listOf(
                                     Claim("claim#1030", "$3000"),
                                     Claim("claim#2099", "$800")
-                                ),
-                                paddingValues = paddingValues
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
+                                paddingValues = paddingValues,
                             )
                         }
-
+                        composable(route = "services") {
+                            ServicesScreen(paddingValues)
+                        }
                         composable(route = "settings") {
                             SettingsScreen(paddingValues)
                         }
@@ -151,8 +193,6 @@ fun DashboardScreen() {
         }
     }
 }
-
-
 
 // Updated Settings screen function
 @Composable
@@ -272,6 +312,12 @@ fun DrawerContent(navController: NavController, onCloseDrawer: () -> Unit) {
                 }
         )
         Text(
+            text = "Services",
+            modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clickable { navController.navigate("services"); onCloseDrawer() })
+        Text(
             text = "Settings",
             modifier = Modifier
                 .fillMaxWidth()
@@ -388,5 +434,54 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
+@Composable
+fun ServicesScreen(paddingValues: PaddingValues) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Available Health Services",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
+        val services = listOf(
+            HealthService("Lab Test", "City Hospital", "Downtown", "8AM - 5PM", "$50", "123-456-7890", 4.5f),
+            HealthService("Dentist", "Smile Clinic", "Uptown", "9AM - 6PM", "$75", "098-765-4321", 4.8f)
+            // Additional services
+        )
+        services.forEach { service ->
+            ServiceCard(service)
+        }
+    }
+}
+
+@Composable
+fun ServiceCard(service: HealthService) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable { /* Handle service click */ },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = service.name, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            Text(text = "Hospital: ${service.hospital}", fontSize = 16.sp, color = Color.Gray)
+            Text(text = "Location: ${service.location}", fontSize = 16.sp, color = Color.Gray)
+            Text(text = "Hours: ${service.hours}", fontSize = 16.sp, color = Color.Gray)
+            Text(text = "Cost: ${service.cost}", fontSize = 16.sp, color = Color.Gray)
+            Text(text = "Contact: ${service.phone}", fontSize = 16.sp, color = Color.Gray)
+            Text(text = "Rating: ${service.rating} stars", fontSize = 16.sp, color = Color.Gray)
+        }
+    }
+}
 
