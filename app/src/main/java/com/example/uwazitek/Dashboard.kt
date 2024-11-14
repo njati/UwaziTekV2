@@ -36,6 +36,16 @@ data class Claim(
     val id: String,
     val amount: String
 )
+//Services
+data class HealthService(
+    val name: String,
+    val hospital: String,
+    val location: String,
+    val hours: String,
+    val cost: String,
+    val phone: String,
+    val rating: Float
+)
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,10 +63,9 @@ fun DashboardScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Track current route
     var currentRoute by remember { mutableStateOf("pending_claims") }
+    var searchQuery by remember { mutableStateOf("") }
 
-    // Update currentRoute when the navigation destination changes
     LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             currentRoute = destination.route ?: "pending_claims"
@@ -73,7 +82,7 @@ fun DashboardScreen() {
             drawerContent = {
                 DrawerContent(navController = navController, onCloseDrawer = { scope.launch { drawerState.close() } })
             },
-            modifier = Modifier.background(Color.White)
+            modifier = Modifier.background(Color.Gray)
         ) {
             Scaffold(
                 topBar = {
@@ -83,7 +92,11 @@ fun DashboardScreen() {
                                 modifier = Modifier.fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("UwaziTek", color = Color.White)
+                                if (currentRoute != "settings") {
+                                    Text("UwaziTek", color = Color.White)
+                                } else {
+                                    Text("", color = Color.White)
+                                }
                             }
                         },
                         navigationIcon = {
@@ -91,13 +104,6 @@ fun DashboardScreen() {
                                 Icon(Icons.Filled.Menu, contentDescription = "Menu")
                             }
                         },
-                        actions = {
-                            if (currentRoute != "settings") {
-                                IconButton(onClick = { /* Handle search click */ }) {
-                                    Icon(Icons.Default.Search, contentDescription = "Search")
-                                }
-                            }
-                        }
                     )
                 },
                 bottomBar = {
@@ -115,33 +121,33 @@ fun DashboardScreen() {
                                 claims = listOf(
                                     Claim("claim#7505", "$5000"),
                                     Claim("claim#8448", "$2000")
-                                ),
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
                                 paddingValues = paddingValues
                             )
                         }
-
                         composable(route = "approved_claims") {
                             ClaimsOverviewScreen(
                                 title = "Approved Claims",
                                 claims = listOf(
                                     Claim("claim#4649", "$1500"),
                                     Claim("claim#8754", "N/A")
-                                ),
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
                                 paddingValues = paddingValues
                             )
                         }
-
                         composable(route = "rejected_claims") {
                             ClaimsOverviewScreen(
                                 title = "Rejected Claims",
                                 claims = listOf(
                                     Claim("claim#1030", "$3000"),
                                     Claim("claim#2099", "$800")
-                                ),
-                                paddingValues = paddingValues
+                                ).filter { it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true) },
+                                paddingValues = paddingValues,
                             )
                         }
-
+                        composable(route = "services") {
+                            ServicesScreen(paddingValues)
+                        }
                         composable(route = "settings") {
                             SettingsScreen(paddingValues)
                         }
@@ -151,8 +157,6 @@ fun DashboardScreen() {
         }
     }
 }
-
-
 
 // Updated Settings screen function
 @Composable
@@ -272,6 +276,12 @@ fun DrawerContent(navController: NavController, onCloseDrawer: () -> Unit) {
                 }
         )
         Text(
+            text = "Services",
+            modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clickable { navController.navigate("services"); onCloseDrawer() })
+        Text(
             text = "Settings",
             modifier = Modifier
                 .fillMaxWidth()
@@ -286,20 +296,37 @@ fun DrawerContent(navController: NavController, onCloseDrawer: () -> Unit) {
 
 @Composable
 fun ClaimsOverviewScreen(title: String, claims: List<Claim>, paddingValues: PaddingValues) {
+    var searchQuery by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .padding(16.dp)
     ) {
+        // Display the title
         Text(
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        claims.forEach { claim ->
+        // Display the search bar below the title
+        TextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Search Claims", color = Color.Gray) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp) // Adjust padding for spacing below
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+        )
+
+        // Filtered list of claims based on search query
+        claims.filter {
+            it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true)
+        }.forEach { claim ->
             ClaimsCard(sectionTitle = claim.id, totalAmount = claim.amount)
         }
     }
@@ -388,5 +415,103 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
+@Composable
+fun ServicesScreen(paddingValues: PaddingValues) {
+    // State to manage search query
+    var searchQuery by remember { mutableStateOf("") }
 
+    // Sample data for services
+    val services = listOf(
+        HealthService("Service 1", "Hospital A", "Location A", "9 AM - 5 PM", "$200", "123-456-7890", 4.5f),
+        HealthService("Service 2", "Hospital B", "Location B", "24/7", "$150", "098-765-4321", 4.0f)
+    )
+
+    // Filter services based on the search query
+    val filteredServices = services.filter {
+        it.name.contains(searchQuery, ignoreCase = true)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(16.dp)
+    ) {
+        // New Search Bar for services
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Search Services") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
+
+        // Display each service as a card
+        filteredServices.forEach { service ->
+            ServiceCard(service)
+        }
+    }
+}
+
+@Composable
+fun ServiceCard(service: HealthService) {
+    // State to manage expanded/compressed status of the card
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable { expanded = !expanded }, // Toggle expanded/compressed on click
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = service.name,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Text(
+                text = "Hospital: ${service.hospital}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+
+            if (expanded) {
+                // Additional details when expanded
+                Text(
+                    text = "Location: ${service.location}",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Hours: ${service.hours}",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Cost: ${service.cost}",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Phone: ${service.phone}",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Rating: ${service.rating} / 5.0",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
 
