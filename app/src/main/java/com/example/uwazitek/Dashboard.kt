@@ -6,29 +6,34 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.ai.client.generativeai.Chat
 import kotlinx.coroutines.launch
 
 // Add the Claim class definition
@@ -149,7 +154,7 @@ fun DashboardScreen() {
                             ServicesScreen(paddingValues)
                         }
                         composable(route = "settings") {
-                            SettingsScreen(paddingValues)
+                            SettingsScreen (paddingValues)
                         }
                     }
                 }
@@ -161,46 +166,182 @@ fun DashboardScreen() {
 // Updated Settings screen function
 @Composable
 fun SettingsScreen(paddingValues: PaddingValues) {
+    var showContactSupportPopup by remember { mutableStateOf(false) }
+    var showUpdatePasswordPopup by remember { mutableStateOf(false) }
+    var showUpdateEmailPopup by remember { mutableStateOf(false) }
+    var showUpdatePhonePopup by remember { mutableStateOf(false) }
+    var showChangeProfilePicPopup by remember { mutableStateOf(false) }
+    var showChatButton by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
             .padding(16.dp)
     ) {
-        // Profile Picture Section
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(50.dp))
-                .background(Color.Gray)
-                .clickable { /* Handle profile picture update */ },
-                contentAlignment = Alignment.Center
-        ) {
-            Text("Profile", color = Color.White)
+        // Settings Options
+        Button(onClick = { showContactSupportPopup = true }) {
+            Text("Contact Support")
         }
-        Spacer(modifier = Modifier.height(24.dp))
 
-        // Update Password Option
-        SettingsOption(
-            label = "Update Password",
-            onClick = { /* Navigate to update password screen */ }
+        Button(onClick = { showUpdatePasswordPopup = true }) {
+            Text("Update Password")
+        }
+
+        Button(onClick = { showUpdateEmailPopup = true }) {
+            Text("Update Email")
+        }
+
+        Button(onClick = { showUpdatePhonePopup = true }) {
+            Text("Update Phone Number")
+        }
+
+        Button(onClick = { showChangeProfilePicPopup = true }) {
+            Text("Change Profile Picture")
+        }
+    }
+
+    // Contact Support Popup
+    if (showContactSupportPopup) {
+        PopupDialog(
+            onDismiss = { showContactSupportPopup = false },
+            content = { Text("Contacting Support...") }
         )
+        // Show chat button for support
+        showChatButton = true
+    }
 
-        // Contact Support Chat Button
-        SettingsOption(
-            label = "Contact Support",
-            onClick = { /* Open chat for support */ }
+    // Update Password Popup
+    if (showUpdatePasswordPopup) {
+        PopupDialog(
+            onDismiss = { showUpdatePasswordPopup = false },
+            content = { PasswordUpdateContent() }
         )
+    }
 
-        // Logout Button
-        Button(
-            onClick = { /* Handle logout functionality */ },
+    // Update Email Popup
+    if (showUpdateEmailPopup) {
+        PopupDialog(
+            onDismiss = { showUpdateEmailPopup = false },
+            content = { EmailUpdateContent() }
+        )
+    }
+
+    // Update Phone Number Popup
+    if (showUpdatePhonePopup) {
+        PopupDialog(
+            onDismiss = { showUpdatePhonePopup = false },
+            content = { PhoneUpdateContent() }
+        )
+    }
+
+    // Change Profile Picture Popup
+    if (showChangeProfilePicPopup) {
+        PopupDialog(
+            onDismiss = { showChangeProfilePicPopup = false },
+            content = { ProfilePicUpdateContent() }
+        )
+    }
+
+    // Chat Button
+    if (showChatButton) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            FloatingActionButton(
+                onClick = { /* Handle chat support functionality */ },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.Chat, contentDescription = "Chat Support")
+            }
+        }
+    }
+}
+
+// PopupDialog composable
+@Composable
+fun PopupDialog(onDismiss: () -> Unit, content: @Composable () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                .padding(16.dp)
+                .shadow(8.dp, RoundedCornerShape(8.dp)), // Use shadow instead of elevation
+            shape = RoundedCornerShape(8.dp),
+            color = Color.White
         ) {
-            Text("Logout", color = Color.White)
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                content()
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = onDismiss) {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
+// Composable functions for each popup content
+@Composable
+fun PasswordUpdateContent() {
+    var newPassword by remember { mutableStateOf("") }
+    Column {
+        Text(text = "Update Password")
+        TextField(
+            value = newPassword,
+            onValueChange = { newPassword = it },
+            label = { Text("New Password") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Button(onClick = { /* Handle password update */ }) {
+            Text("Update Password")
+        }
+    }
+}
+
+@Composable
+fun EmailUpdateContent() {
+    var newEmail by remember { mutableStateOf("") }
+    Column {
+        Text(text = "Update Email")
+        TextField(
+            value = newEmail,
+            onValueChange = { newEmail = it },
+            label = { Text("New Email") }
+        )
+        Button(onClick = { /* Handle email update */ }) {
+            Text("Update Email")
+        }
+    }
+}
+
+@Composable
+fun PhoneUpdateContent() {
+    var newPhone by remember { mutableStateOf("") }
+    Column {
+        Text(text = "Update Phone Number")
+        TextField(
+            value = newPhone,
+            onValueChange = { newPhone = it },
+            label = { Text("New Phone Number") }
+        )
+        Button(onClick = { /* Handle phone update */ }) {
+            Text("Update Phone")
+        }
+    }
+}
+
+@Composable
+fun ProfilePicUpdateContent() {
+    Column {
+        Text(text = "Change Profile Picture")
+        Button(onClick = { /* Handle profile picture update */ }) {
+            Text("Choose Picture")
         }
     }
 }
@@ -319,15 +460,20 @@ fun ClaimsOverviewScreen(title: String, claims: List<Claim>, paddingValues: Padd
             placeholder = { Text("Search Claims", color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp) // Adjust padding for spacing below
+                .padding(bottom = 16.dp)
                 .background(Color.White, shape = RoundedCornerShape(8.dp))
         )
 
-        // Filtered list of claims based on search query
-        claims.filter {
-            it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true)
-        }.forEach { claim ->
-            ClaimsCard(sectionTitle = claim.id, totalAmount = claim.amount)
+        // LazyColumn to display filtered claims
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize() // Take up available space
+        ) {
+            items(claims.filter {
+                it.id.contains(searchQuery, ignoreCase = true) || it.amount.contains(searchQuery, ignoreCase = true)
+            }) { claim ->
+                ClaimsCard(sectionTitle = claim.id, totalAmount = claim.amount)
+            }
         }
     }
 }
@@ -417,7 +563,6 @@ fun BottomNavigationBar(navController: NavController) {
 
 @Composable
 fun ServicesScreen(paddingValues: PaddingValues) {
-    // State to manage search query
     var searchQuery by remember { mutableStateOf("") }
 
     // Sample data for services
@@ -426,30 +571,32 @@ fun ServicesScreen(paddingValues: PaddingValues) {
         HealthService("Service 2", "Hospital B", "Location B", "24/7", "$150", "098-765-4321", 4.0f)
     )
 
-    // Filter services based on the search query
-    val filteredServices = services.filter {
-        it.name.contains(searchQuery, ignoreCase = true)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .padding(16.dp)
     ) {
-        // New Search Bar for services
-        OutlinedTextField(
+        TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search Services") },
+            placeholder = { Text("Search Services", color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
         )
 
-        // Display each service as a card
-        filteredServices.forEach { service ->
-            ServiceCard(service)
+        // LazyColumn for services
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(services.filter {
+                it.name.contains(searchQuery, ignoreCase = true) || it.location.contains(searchQuery, ignoreCase = true)
+            }) { service ->
+                ServiceCard(service = service)
+            }
         }
     }
 }
@@ -515,3 +662,20 @@ fun ServiceCard(service: HealthService) {
     }
 }
 
+// Search Composable
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    placeholderText: String
+) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text(placeholderText, color = Color.Gray) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+    )
+}
