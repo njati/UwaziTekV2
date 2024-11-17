@@ -33,7 +33,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.ai.client.generativeai.Chat
 import kotlinx.coroutines.launch
 
 // Add the Claim class definition
