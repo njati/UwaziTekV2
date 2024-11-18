@@ -3,15 +3,18 @@ package com.example.uwazitek
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.List
@@ -21,6 +24,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -33,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
 // Add the Claim class definition
@@ -175,73 +180,91 @@ fun SettingsScreen(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center // Center elements vertically
     ) {
+        // Profile Picture at the Top Center
+        Image(
+            painter = rememberAsyncImagePainter("your_image_url_or_drawable_resource"),
+            contentDescription = "Profile Picture",
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .clickable { showChangeProfilePicPopup = true } // Opens profile picture change popup
+                .background(Color.Gray)
+                .padding(8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         // Settings Options
+        // Contact Support with Confirmation Field
         Button(onClick = { showContactSupportPopup = true }) {
             Text("Contact Support")
         }
+        if (showContactSupportPopup) {
+            PopupDialog(
+                onDismiss = { showContactSupportPopup = false },
+                content = {}
+            )
+            showChatButton = true
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Update Password with Confirmation Field
         Button(onClick = { showUpdatePasswordPopup = true }) {
             Text("Update Password")
         }
+        if (showUpdatePasswordPopup) {
+            PopupDialog(
+                onDismiss = { showUpdatePasswordPopup = false },
+                content = { PasswordUpdateContent() } // Adds confirmation field
+            )
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Update Email with Confirmation Field
         Button(onClick = { showUpdateEmailPopup = true }) {
             Text("Update Email")
         }
+        if (showUpdateEmailPopup) {
+            PopupDialog(
+                onDismiss = { showUpdateEmailPopup = false },
+                content = { EmailUpdateContent() } // Adds confirmation field
+            )
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Update Phone Number with Confirmation Field
         Button(onClick = { showUpdatePhonePopup = true }) {
             Text("Update Phone Number")
         }
+        if (showUpdatePhonePopup) {
+            PopupDialog(
+                onDismiss = { showUpdatePhonePopup = false },
+                content = { PhoneUpdateContent() } // Adds confirmation field
+            )
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Change Profile Picture (No Confirmation Field Needed)
         Button(onClick = { showChangeProfilePicPopup = true }) {
             Text("Change Profile Picture")
         }
+        if (showChangeProfilePicPopup) {
+            PopupDialog(
+                onDismiss = { showChangeProfilePicPopup = false },
+                content = { ProfilePicUpdateContent() }
+            )
+        }
     }
 
-    // Contact Support Popup
-    if (showContactSupportPopup) {
-        PopupDialog(
-            onDismiss = { showContactSupportPopup = false },
-            content = { Text("Contacting Support...") }
-        )
-        // Show chat button for support
-        showChatButton = true
-    }
-
-    // Update Password Popup
-    if (showUpdatePasswordPopup) {
-        PopupDialog(
-            onDismiss = { showUpdatePasswordPopup = false },
-            content = { PasswordUpdateContent() }
-        )
-    }
-
-    // Update Email Popup
-    if (showUpdateEmailPopup) {
-        PopupDialog(
-            onDismiss = { showUpdateEmailPopup = false },
-            content = { EmailUpdateContent() }
-        )
-    }
-
-    // Update Phone Number Popup
-    if (showUpdatePhonePopup) {
-        PopupDialog(
-            onDismiss = { showUpdatePhonePopup = false },
-            content = { PhoneUpdateContent() }
-        )
-    }
-
-    // Change Profile Picture Popup
-    if (showChangeProfilePicPopup) {
-        PopupDialog(
-            onDismiss = { showChangeProfilePicPopup = false },
-            content = { ProfilePicUpdateContent() }
-        )
-    }
-
-    // Chat Button
+    // Chat Button (Appears at Bottom Right)
     if (showChatButton) {
         Box(
             modifier = Modifier.fillMaxSize()
@@ -368,68 +391,77 @@ fun SettingsOption(label: String, onClick: () -> Unit) {
 
 @Composable
 fun DrawerContent(navController: NavController, onCloseDrawer: () -> Unit) {
+    // Changes: Full screen height and half screen width for the drawer
     Column(
         modifier = Modifier
-            .fillMaxHeight(2 / 3f)
-            .fillMaxWidth(0.5f)
-            .padding(vertical = 16.dp)
+            .fillMaxHeight()      // Cover entire screen height
+            .fillMaxWidth(0.5f)   // Cover half screen width
             .background(Color.White)
     ) {
         Text(
             text = "UwaziTek",
             fontWeight = FontWeight.Bold,
             color = Color.Black,
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(20.dp)
                 .clickable { onCloseDrawer() }
         )
-        Text(
+
+        // Enhanced text styling and padding for menu items
+        DrawerItem(
             text = "Pending",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate("pending_claims") // Navigate to Pending Claims
-                    onCloseDrawer()
-                }
+            navController = navController,
+            route = "pending_claims",
+            onCloseDrawer = onCloseDrawer
         )
-        Text(
+
+        DrawerItem(
             text = "Approved",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate("approved_claims") // Navigate to Approved Claims
-                    onCloseDrawer()
-                }
+            navController = navController,
+            route = "approved_claims",
+            onCloseDrawer = onCloseDrawer
         )
-        Text(
+
+        DrawerItem(
             text = "Closed",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate("rejected_claims") // Navigate to Rejected Claims
-                    onCloseDrawer()
-                }
+            navController = navController,
+            route = "rejected_claims",
+            onCloseDrawer = onCloseDrawer
         )
-        Text(
+
+        DrawerItem(
             text = "Services",
-            modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .clickable { navController.navigate("services"); onCloseDrawer() })
-        Text(
+            navController = navController,
+            route = "services",
+            onCloseDrawer = onCloseDrawer
+        )
+
+        DrawerItem(
             text = "Settings",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate("settings") // Navigate to Settings
-                    onCloseDrawer()
-                }
+            navController = navController,
+            route = "settings",
+            onCloseDrawer = onCloseDrawer
+        )
+    }
+}
+
+@Composable
+fun DrawerItem(text: String, navController: NavController, route: String, onCloseDrawer: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 20.dp)
+            .clickable {
+                navController.navigate(route)
+                onCloseDrawer()
+            }
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            color = Color.DarkGray
         )
     }
 }
