@@ -1,11 +1,8 @@
-
-
-package com.example.uwazitek.createaccount
+package com.example.uwazitek.auth.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,17 +19,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.uwazitek.components.LoginTextField
-import com.example.healthinsuranceapp.ui.theme.HealthInsuranceAppTheme
+import com.example.uwazitek.ui.theme.HealthInsuranceAppTheme
 import com.example.uwazitek.R
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 
 val defaultPadding = 16.dp
 val itemSpacing = 8.dp
 
 @Composable
-fun CreateAccountScreen(modifier: Modifier = Modifier) {
+fun SignUpScreen(navController: NavController, modifier: Modifier = Modifier) {
     // State for user input fields
     val (userName, setUsername) = rememberSaveable { mutableStateOf("") }
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
@@ -153,6 +152,8 @@ fun CreateAccountScreen(modifier: Modifier = Modifier) {
                         setPassword("")
                         setConfirmPassword("")
                         onCheckedChange(false) // Uncheck the checkbox
+
+                        navController.navigate("dashboard")
                     }
                 },
                 modifier = Modifier
@@ -180,7 +181,7 @@ fun CreateAccountScreen(modifier: Modifier = Modifier) {
                     text = "Login",
                     color = MaterialTheme.colorScheme.primary,
                     style = TextStyle(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.clickable { /* Handle Login action */ }
+                    modifier = Modifier.clickable { navController.navigate("login") }
                 )
             }
 
@@ -197,8 +198,8 @@ fun CreateAccountScreen(modifier: Modifier = Modifier) {
 
 @Preview(showSystemUi = true)
 @Composable
-fun PrevCreateAccountScreen() {
+fun PrevSignUpScreen() {
     HealthInsuranceAppTheme {
-        CreateAccountScreen()
+        SignUpScreen(navController = rememberNavController())
     }
 }

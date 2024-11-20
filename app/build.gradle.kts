@@ -78,7 +78,10 @@ dependencies {
     implementation (libs.androidx.ui.tooling.preview.v140)
 
     implementation (libs.androidx.material.icons.extended)
-    implementation(libs.coil.kt.coil.compose)
-    implementation(libs.coil.kt.coil.compose)
+    implementation (libs.coil.kt.coil.compose)
+    implementation (libs.coil.kt.coil.compose)
 
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.okhttp)
 }

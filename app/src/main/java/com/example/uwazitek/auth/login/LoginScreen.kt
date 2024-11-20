@@ -1,12 +1,10 @@
-package com.example.uwazitek.login
+package com.example.uwazitek.auth.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,21 +14,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.uwazitek.components.LoginTextField
-import com.example.healthinsuranceapp.ui.theme.HealthInsuranceAppTheme
+import com.example.uwazitek.ui.theme.HealthInsuranceAppTheme
 import androidx.compose.foundation.clickable
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.uwazitek.R
 
 val defaultPadding = 16.dp
 val itemSpacing = 8.dp
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
     // State for user input fields
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
     val (password, setPassword) = rememberSaveable { mutableStateOf("") }
@@ -116,7 +115,13 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
             // Login Button
             Button(
-                onClick = { /* login logic */ },
+                onClick  = {
+
+
+                    navController.navigate("dashboard")
+
+
+                           },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = defaultPadding),
@@ -141,7 +146,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     text = "Sign Up",
                     color = MaterialTheme.colorScheme.primary,
                     style = TextStyle(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.clickable { /* Sign Up action */ }
+                    modifier = Modifier.clickable { navController.navigate("signup") }
                 )
             }
 
@@ -154,6 +159,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 @Composable
 fun PrevLoginScreen() {
     HealthInsuranceAppTheme {
-        LoginScreen()
+        LoginScreen(navController = rememberNavController())
     }
 }
