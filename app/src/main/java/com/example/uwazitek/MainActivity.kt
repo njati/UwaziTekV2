@@ -24,10 +24,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SetupNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "intro1") {
-        composable("intro1") { IntroScreen1(navController) }
-        composable("intro2") { IntroScreen2(navController) }
-//        composable("login") { LoginScreen() }
+    NavHost(navController = navController, startDestination = "dashboard") {
+//        composable("intro1") { IntroScreen1(navController) }
+//        composable("intro2") { IntroScreen2(navController) }
+        composable("dashboard") { DashboardScreen( ) }
     }
 }
 }

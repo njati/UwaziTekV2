@@ -71,7 +71,7 @@ fun IntroScreen2(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { navController.navigate("nextScreen") }, // Replace "nextScreen" with your target
+                    onClick = { navController.navigate("dashboard") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),

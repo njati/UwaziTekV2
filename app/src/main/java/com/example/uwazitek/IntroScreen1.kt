@@ -35,7 +35,7 @@ fun IntroScreen1(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.firstsplashscreenimageone), // Replace if needed
+                    painter = painterResource(id = R.drawable.firstsplashscreenimageone),
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .fillMaxWidth(0.8f)

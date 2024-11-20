@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,8 +66,19 @@ dependencies {
     implementation (libs.androidx.activity.compose.v161)
     implementation (libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.compose.v260)
-    implementation(libs.androidx.navigation.compose) // Update to latest version if necessary
+    implementation(libs.androidx.navigation.compose)
+    implementation (libs.material3)
+    implementation (libs.androidx.material.v100)
+    implementation (libs.androidx.material.v150)
+    implementation (libs.material3.v100)
+    implementation (libs.androidx.material)
 
+    implementation (libs.androidx.ui.v140)
+    implementation (libs.androidx.material.v140)
+    implementation (libs.androidx.ui.tooling.preview.v140)
 
-} // Activity Compose integration
+    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.coil.kt.coil.compose)
+    implementation(libs.coil.kt.coil.compose)
 
+}
