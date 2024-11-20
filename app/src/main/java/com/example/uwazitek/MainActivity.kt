@@ -8,7 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.healthinsuranceapp.ui.theme.HealthInsuranceAppTheme
+import com.example.uwazitek.ui.theme.HealthInsuranceAppTheme
+import com.example.uwazitek.auth.login.LoginScreen
+import com.example.uwazitek.auth.signup.SignUpScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,12 +24,12 @@ class MainActivity : ComponentActivity() {
 
     }
 
-@Composable
-fun SetupNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "dashboard") {
-//        composable("intro1") { IntroScreen1(navController) }
-//        composable("intro2") { IntroScreen2(navController) }
-        composable("dashboard") { DashboardScreen( ) }
+    @Composable
+    fun SetupNavGraph(navController: NavHostController) {
+        NavHost(navController = navController, startDestination = "login") {
+            composable("login") { LoginScreen(navController) }
+            composable("signup") { SignUpScreen(navController) }
+            composable("dashboard") { DashboardScreen(navController) }
+        }
     }
-}
 }
