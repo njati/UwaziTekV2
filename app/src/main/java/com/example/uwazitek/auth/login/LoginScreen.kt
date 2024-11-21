@@ -1,5 +1,6 @@
 package com.example.uwazitek.auth.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -24,6 +25,9 @@ import androidx.compose.foundation.clickable
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.uwazitek.R
+import com.example.uwazitek.api.APIService
+import okhttp3.ResponseBody
+import retrofit2.Call
 
 val defaultPadding = 16.dp
 val itemSpacing = 8.dp
@@ -115,13 +119,23 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
             // Login Button
             Button(
-                onClick  = {
+                onClick = {
+                    APIService.login(email, password).enqueue(object : retrofit2.Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
+                            if (response.isSuccessful) {
+                                navController.navigate("dashboard")
+                            } else {
+                                // Handle login failure
+                                Log.d("Uwazitek", response.message() + response.code().toString())
+                            }
+                        }
 
-
-                    navController.navigate("dashboard")
-
-
-                           },
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            // Handle network failure
+                            Log.e("Uwazitek", "Failed to login")
+                        }
+                    })
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = defaultPadding),

@@ -1,4 +1,4 @@
-package com.example.healthinsuranceapp.ui.theme
+package com.example.uwazitek.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
@@ -28,10 +28,6 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color.Black           // Black on surface
 )
 
-// Typography settings, customize as needed
-val Typography = Typography(
-    // Define your typography styles here
-)
 
 // Shape settings, customize as needed
 val Shapes = Shapes(
