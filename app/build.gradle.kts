@@ -85,4 +85,8 @@ dependencies {
     implementation (libs.converter.gson)
     implementation (libs.okhttp)
     implementation(libs.logging.interceptor)  // Logging Interceptor (optional, for logging)
+
+    implementation(libs.okhttp.v490)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }
