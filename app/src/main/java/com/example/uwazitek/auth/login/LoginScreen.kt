@@ -22,11 +22,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.uwazitek.components.LoginTextField
 import com.example.uwazitek.ui.theme.HealthInsuranceAppTheme
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.uwazitek.R
 import com.example.uwazitek.api.APIService
+import com.example.uwazitek.api.dto.Login
+import com.example.uwazitek.auth.api.AuthService
+import com.example.uwazitek.auth.api.RetrofitInstance
+import com.example.uwazitek.auth.tokenManager.TokenManager
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 
 val defaultPadding = 16.dp
@@ -38,6 +44,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
     val (password, setPassword) = rememberSaveable { mutableStateOf("") }
     val (checked, onCheckedChange) = rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -120,9 +127,12 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             // Login Button
             Button(
                 onClick = {
-                    APIService.login(email, password).enqueue(object : retrofit2.Callback<ResponseBody> {
+                    APIService.getAuthService(context).login(Login(email, password)).enqueue(object : retrofit2.Callback<ResponseBody> {
                         override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
                             if (response.isSuccessful) {
+                                val jsonObject = JSONObject(response.body()?.string() ?: "")
+                                Log.d("Uwazitek", "JWT Token: ${jsonObject.getJSONObject("data").get("jwt")}")
+                                TokenManager(context).saveToken("${jsonObject.getJSONObject("data").get("jwt")}")
                                 navController.navigate("dashboard")
                             } else {
                                 // Handle login failure

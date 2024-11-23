@@ -1,6 +1,7 @@
 package com.example.uwazitek
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -37,7 +39,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.uwazitek.api.APIService
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
 
 // Add the Claim class definition
 data class Claim(
@@ -64,6 +70,8 @@ class DashboardActivity : ComponentActivity() {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(globalNav: NavController) {
@@ -75,10 +83,16 @@ fun DashboardScreen(globalNav: NavController) {
     var currentRoute by remember { mutableStateOf("pending_claims") }
     var searchQuery by remember { mutableStateOf("") }
 
+    var context = LocalContext.current
+
     LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             currentRoute = destination.route ?: "pending_claims"
         }
+
+        var response = APIService.getDashboardService(context).getDashboardStat().body()
+        Log.d("Dashboard", response.toString())
+
     }
 
     Box(
@@ -113,7 +127,7 @@ fun DashboardScreen(globalNav: NavController) {
                                 Icon(Icons.Filled.Menu, contentDescription = "Menu")
                             }
                         },
-                    )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)                    )
                 },
                 bottomBar = {
                     BottomNavigationBar(navController)
@@ -567,7 +581,8 @@ fun ClaimsCard(sectionTitle: String, totalAmount: String) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     BottomNavigation(
-        contentColor = Color.White
+        contentColor = Color.White,
+        backgroundColor = Color.White
     ) {
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.List, contentDescription = "Pending Claims") },

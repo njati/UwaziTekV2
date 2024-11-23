@@ -1,16 +1,14 @@
 package com.example.uwazitek.api;
 
-import android.util.Log;
+import android.content.Context;
 
-import com.example.uwazitek.api.dto.Login;
+import com.example.uwazitek.auth.tokenManager.TokenManager;
 
 import java.io.IOException;
 
-import kotlin.jvm.Throws;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -19,7 +17,7 @@ public class APIService {
     private static final String BASE_URL = "http://52.22.245.63/";
     private static Retrofit retrofit = null;
 
-    public static Retrofit getClient() {
+    public static Retrofit getClient(Context context) {
 
         if (retrofit == null) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -27,6 +25,7 @@ public class APIService {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(loggingInterceptor)
+                    .addInterceptor(authInterceptor(context))
                     .build();
 
             retrofit = new Retrofit.Builder()
@@ -39,18 +38,31 @@ public class APIService {
         return retrofit;
     }
 
-    public static APIServiceInterface getAPIService() {
-        return getClient().create(APIServiceInterface.class);
+    // Function to create an interceptor that adds the token to the request header
+    private static Interceptor authInterceptor(Context context) {
+        return new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                String token = new TokenManager(context).getToken(); // Retrieve token from TokenManager
+                okhttp3.Request.Builder requestBuilder = chain.request().newBuilder();
+
+                // Add token to the header if it's available
+                if (token != null && !token.isEmpty()) {
+                    requestBuilder.addHeader("Authorization", "Bearer " + token);
+                }
+
+                return chain.proceed(requestBuilder.build());
+            }
+        };
+    }
+    public static AuthServiceInterface getAuthService(Context context) {
+        return getClient(context).create(AuthServiceInterface.class);
     }
 
-    public static Call<ResponseBody> login(String policy_number, String password) {
-        Log.i("APIService", "Logging in with policy_number: " + policy_number + " and password: " + password);
-        return getAPIService().login(new Login(policy_number, password));
+    public static DashboardServiceInterface getDashboardService(Context context) {
+        return getClient(context).create(DashboardServiceInterface.class);
     }
 
-    public static Call<ResponseBody> register(String username, String password) {
-        return getAPIService().register(username, password);
-    }
 }
 
 

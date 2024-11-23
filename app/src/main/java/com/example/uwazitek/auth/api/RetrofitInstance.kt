@@ -44,6 +44,8 @@ object RetrofitInstance {
     fun getAuthService(context: Context): AuthService {
         return getRetrofit(context).create(AuthService::class.java)
     }
+
+
 }
 
 

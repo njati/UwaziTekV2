@@ -2,6 +2,7 @@ package com.example.uwazitek.auth.tokenManager
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 class TokenManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -19,6 +20,7 @@ class TokenManager(context: Context) {
             putLong(KEY_ISSUE_TIME, System.currentTimeMillis())
             apply()
         }
+        Log.d("TokenManager", "Token saved: $token")
     }
 
     // Get the token if it hasn’t expired
