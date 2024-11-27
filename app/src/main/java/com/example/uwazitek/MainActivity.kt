@@ -21,9 +21,7 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(navController = navController)
             }
         }
-
     }
-
     @Composable
     fun SetupNavGraph(navController: NavHostController) {
         NavHost(navController = navController, startDestination = "login") {

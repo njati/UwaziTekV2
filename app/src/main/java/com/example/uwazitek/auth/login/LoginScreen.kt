@@ -28,8 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.uwazitek.R
 import com.example.uwazitek.api.APIService
 import com.example.uwazitek.api.dto.Login
-import com.example.uwazitek.auth.api.AuthService
-import com.example.uwazitek.auth.api.RetrofitInstance
 import com.example.uwazitek.auth.tokenManager.TokenManager
 import okhttp3.ResponseBody
 import org.json.JSONObject

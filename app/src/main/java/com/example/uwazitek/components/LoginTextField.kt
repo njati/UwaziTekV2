@@ -11,6 +11,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -34,3 +37,15 @@ fun LoginTextField(
         shape = RoundedCornerShape(20.dp)
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewLoginTextField() {
+    LoginTextField(
+        value = "",
+        onValueChange = {},
+        labelText = "Username",
+        leadingIcon = Icons.Default.Person
+    )
+}
+

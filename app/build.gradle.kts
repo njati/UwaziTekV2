@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.generativeai)
+    implementation(libs.androidx.benchmark.macro)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,4 +90,6 @@ dependencies {
     implementation(libs.okhttp.v490)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation (libs.androidx.animation)
+    implementation ("androidx.compose.animation:animation:1.0.0")
 }
