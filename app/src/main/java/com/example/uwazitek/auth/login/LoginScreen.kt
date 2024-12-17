@@ -1,5 +1,6 @@
 package com.example.uwazitek.auth.login
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -32,6 +33,7 @@ import com.example.uwazitek.auth.tokenManager.TokenManager
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
+import android.widget.Toast
 
 val defaultPadding = 16.dp
 val itemSpacing = 8.dp
@@ -63,21 +65,18 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Spacer(Modifier.weight(1f))
-
             Text(
                 text = "Login",
                 modifier = Modifier.padding(bottom = itemSpacing * 2),
                 style = TextStyle(fontSize = 28.sp, textAlign = TextAlign.Center, color = Color.Gray)
             )
-
             LoginTextField(
                 value = email,
                 onValueChange = setEmail,
-                labelText = "Email",
+                labelText = "Enter Your Email",
                 modifier = Modifier.fillMaxWidth(),
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
             Spacer(Modifier.height(itemSpacing))
@@ -88,7 +87,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 onValueChange = setPassword,
                 labelText = "Password",
                 modifier = Modifier.fillMaxWidth(),
-//                visualTransformation = PasswordVisualTransformation()
+                // visualTransformation = PasswordVisualTransformation()
             )
 
             Spacer(Modifier.height(itemSpacing))
@@ -125,24 +124,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             // Login Button
             Button(
                 onClick = {
-                    APIService.getAuthService(context).login(Login(email, password)).enqueue(object : retrofit2.Callback<ResponseBody> {
-                        override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
-                            if (response.isSuccessful) {
-                                val jsonObject = JSONObject(response.body()?.string() ?: "")
-                                Log.d("Uwazitek", "JWT Token: ${jsonObject.getJSONObject("data").get("jwt")}")
-                                TokenManager(context).saveToken("${jsonObject.getJSONObject("data").get("jwt")}")
-                                navController.navigate("dashboard")
-                            } else {
-                                // Handle login failure
-                                Log.d("Uwazitek", response.message() + response.code().toString())
-                            }
-                        }
-
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            // Handle network failure
-                            Log.e("Uwazitek", "Failed to login")
-                        }
-                    })
+                    navController.navigate("dashboard")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,6 +136,64 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                 )
             }
+
+//            Button(
+//                onClick = {
+//                    val passwordValidators = listOf(
+//                        "Password must be at least 8 characters" to { password.length >= 8 },
+//                        "Password must contain at least one uppercase letter" to { password.any { it.isUpperCase() } },
+//                        "Password must contain at least one lowercase letter" to { password.any { it.isLowerCase() } },
+//                    )
+//
+//                    // Check if password meets all validators
+//                    val failedValidators = passwordValidators.filter { !it.second() }.map { it.first }
+//
+//                    if (email.isBlank() || password.isBlank()) {
+//                        Toast.makeText(context, "Email and Password must not be empty", Toast.LENGTH_SHORT).show()
+//                        return@Button
+//                    } else if (failedValidators.isNotEmpty()) {
+//                        Toast.makeText(context, failedValidators.joinToString("\n"), Toast.LENGTH_SHORT).show()
+//                        return@Button
+//                    }
+//
+//                    APIService.getAuthService(context).login(Login(email, password)).enqueue(object : retrofit2.Callback<ResponseBody> {
+//                        override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
+//                            if (response.isSuccessful) {
+//                                val responseBody = response.body()?.string()
+//                                val jsonObject = JSONObject(responseBody ?: "")
+//                                if (jsonObject.has("data")) {
+//                                    val data = jsonObject.getJSONObject("data")
+//                                    val jwt = data.getString("jwt")
+//                                    Log.d("Uwazitek", "JWT Token: $jwt")
+//                                    TokenManager(context).saveToken(jwt)
+//                                    navController.navigate("dashboard")
+//                                } else {
+//                                    showNotRegisteredUserMessage(context)
+//                                }
+//                            } else {
+//                                // Handle login failure
+//                                showNotRegisteredUserMessage(context)
+//                            }
+//                        }
+//
+//                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//                            // Handle network failure
+//                            Log.e("Uwazitek", "Failed to login")
+//                        }
+//                    })
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = defaultPadding),
+//                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+//            )
+//
+//            {
+//                Text(
+//                    text = "Login",
+//                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+//                )
+//            }
 
             Spacer(Modifier.height(itemSpacing))
 
@@ -175,6 +215,12 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             Spacer(Modifier.weight(1f))
         }
     }
+}
+
+fun showNotRegisteredUserMessage(context: Context) {
+    Log.d("Uwazitek", "You're not a registered Policy Holder")
+    // You can also show a Snackbar or Toast here if needed
+    Toast.makeText(context, "You're not a registered Policy Holder", Toast.LENGTH_SHORT).show()
 }
 
 @Preview(showSystemUi = true)

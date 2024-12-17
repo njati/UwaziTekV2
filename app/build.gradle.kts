@@ -12,6 +12,7 @@ android {
         applicationId = "com.example.uwazitek"
         minSdk = 24
         targetSdk = 34
+
         versionCode = 1
         versionName = "1.0"
 
@@ -52,6 +53,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.generativeai)
     implementation(libs.androidx.benchmark.macro)
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,5 +93,11 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation (libs.androidx.animation)
-    implementation ("androidx.compose.animation:animation:1.0.0")
+    implementation (libs.androidx.animation.v176)
+
+
+    implementation (libs.androidx.material3.v120)
+    implementation (libs.androidx.ui.v160)
+    implementation (libs.ui.tooling)
+    implementation (libs.material3)
 }

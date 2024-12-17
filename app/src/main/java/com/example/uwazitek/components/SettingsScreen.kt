@@ -162,6 +162,7 @@ import androidx.navigation.compose.rememberNavController
             Spacer(modifier = Modifier.height(16.dp))
             val context = LocalContext.current
             Button(onClick = {
+                TokenManager(context).logout(navController)
             },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC0C0C0))) {

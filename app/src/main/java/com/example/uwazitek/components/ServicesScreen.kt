@@ -2,7 +2,6 @@ package com.example.uwazitek.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.uwazitek.HealthService
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.uwazitek.api.dto.HealthService
 
 @Composable
-fun ServicesScreen(paddingValues: PaddingValues) {
+fun ServicesScreen(paddingValues: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Sample data for services
@@ -35,9 +36,10 @@ fun ServicesScreen(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
             .padding(16.dp)
     ) {
+
+
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -52,7 +54,8 @@ fun ServicesScreen(paddingValues: PaddingValues) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-        ) {
+        )
+        {
             items(services.filter {
                 it.name.contains(searchQuery, ignoreCase = true) || it.location.contains(searchQuery, ignoreCase = true)
             }) { service ->
@@ -65,6 +68,9 @@ fun ServicesScreen(paddingValues: PaddingValues) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewServicesScreen() {
-    ServicesScreen(paddingValues = PaddingValues())
+    val navController = rememberNavController()
+    ServicesScreen(navController)
 }
+
+
 

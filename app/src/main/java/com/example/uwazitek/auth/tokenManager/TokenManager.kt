@@ -3,6 +3,7 @@ package com.example.uwazitek.auth.tokenManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.navigation.NavController
 
 class TokenManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -32,11 +33,18 @@ class TokenManager(context: Context) {
     }
 
     // Clear the token (e.g., on logout)
-    fun clearToken() {
+    fun logout(navController: NavController) {
         prefs.edit().apply {
             remove(KEY_TOKEN)
             remove(KEY_ISSUE_TIME)
             apply()
+        }
+        // Redirect to login screen
+        navController.navigate("login")
+        {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
         }
     }
 }

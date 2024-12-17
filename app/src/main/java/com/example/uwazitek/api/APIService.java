@@ -1,9 +1,7 @@
 package com.example.uwazitek.api;
 
 import android.content.Context;
-
 import com.example.uwazitek.auth.tokenManager.TokenManager;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -12,9 +10,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class APIService {
-    private static final String BASE_URL = "http://52.22.245.63/";
+    private static final String BASE_URL = "https://uwazi-api-2.onrender.com";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(Context context) {
@@ -64,6 +61,3 @@ public class APIService {
     }
 
 }
-
-
-// Interceptor to log HTTP request and response

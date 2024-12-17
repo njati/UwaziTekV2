@@ -13,7 +13,7 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Color(0xFFBBDEFB),     // Light Blue
     background = Color(0xFF1565C0),   // Another shade of Blue for background
     surface = Color(0xFF0D47A1),      // Dark Blue as a surface color
-    onBackground = Color.Black,       // Black on background
+    onBackground = Color(0xFFC0C0C0),  // Light Grey on background
     onSurface = Color.Black           // Black on surface
 )
 
@@ -24,7 +24,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Color(0xFFBBDEFB),     // Very Light Blue
     background = Color(0xFFE3F2FD),   // Light Blue Background
     surface = Color(0xFF1976D2),      // Medium Blue for surfaces
-    onBackground = Color.Black,       // Black on background
+    onBackground = Color(0xFFC0C0C0),  // Light Grey on background
     onSurface = Color.Black           // Black on surface
 )
 
