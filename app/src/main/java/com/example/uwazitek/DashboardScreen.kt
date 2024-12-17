@@ -155,17 +155,25 @@ fun ClaimsDashboard(navController: NavHostController, username: String) {
 
             // Square Grid Layout for Claims
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2), // Two cards per row
+                columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f) // Takes up remaining space
+                modifier = Modifier.weight(1f)
             ) {
                 items(allClaimsData) { claim ->
                     ClaimCard(claim = claim) {
-                        println("Clicked on: ${claim.title}")
+                        val claimType = when (claim.title) {
+                            "All Claims" -> "all"
+                            "Pending Claims" -> "pending"
+                            "Approved Claims" -> "approved"
+                            "Rejected Claims" -> "rejected"
+                            else -> "all"
+                        }
+                        navController.navigate("claims/$claimType")
                     }
                 }
             }
+
         }
 
         // Bottom Navigation Bar
@@ -216,19 +224,28 @@ fun ClaimCard(claim: ClaimItem, onClick: () -> Unit) {
 @Composable
 fun BottomNavigationBar(navController: NavHostController, modifier: Modifier = Modifier) {
     NavigationBar(modifier = modifier) {
-        val items = listOf("Home", "Services", "Account")
+        val items = listOf("Home", "Services", "Settings") // Updated label names
         val icons = listOf(Icons.Default.Home, Icons.Default.FitnessCenter, Icons.Default.Settings)
+        val routes = listOf("dashboard", "servicesscreen", "settingsscreen") // Navigation routes
 
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 icon = { Icon(imageVector = icons[index], contentDescription = item) },
                 label = { Text(item) },
-                selected = false,
-                onClick = { navController.navigate(item.lowercase()) }
+                selected = navController.currentDestination?.route == routes[index],
+                onClick = {
+                    // Navigate only if the user is not already on the selected route
+                    if (navController.currentDestination?.route != routes[index]) {
+                        navController.navigate(routes[index]) {
+                            popUpTo("dashboard") { inclusive = false } // Avoid duplicate entries
+                        }
+                    }
+                }
             )
         }
     }
 }
+
 
 data class ClaimItem(val title: String, val amount: String, val description: String, val color: Color)
 

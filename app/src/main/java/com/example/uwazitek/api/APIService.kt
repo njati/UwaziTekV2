@@ -1,63 +1,65 @@
-package com.example.uwazitek.api;
+package com.example.uwazitek.api
 
-import android.content.Context;
-import com.example.uwazitek.auth.tokenManager.TokenManager;
-import java.io.IOException;
+import android.content.Context
+import android.util.Log
+import com.example.uwazitek.auth.tokenManager.TokenManager
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+object APIService {
 
-public class APIService {
-    private static final String BASE_URL = "https://uwazi-api-2.onrender.com";
-    private static Retrofit retrofit = null;
+    private const val BASE_URL = "https://uwazi-api.onrender.com/"
+    private var retrofit: Retrofit? = null
 
-    public static Retrofit getClient(Context context) {
-
+    fun getClient(context: Context): Retrofit {
         if (retrofit == null) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            // Create logging interceptor for debugging HTTP requests
+            val loggingInterceptor = HttpLoggingInterceptor()
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .addInterceptor(authInterceptor(context))
-                    .build();
+            // Create OkHttpClient with token interceptor and logging
+            val client = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(AuthInterceptor(context))
+                .build()
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            // Build Retrofit instance
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
         }
-
-        return retrofit;
+        return retrofit!!
     }
 
-    // Function to create an interceptor that adds the token to the request header
-    private static Interceptor authInterceptor(Context context) {
-        return new Interceptor() {
-            @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
-                String token = new TokenManager(context).getToken(); // Retrieve token from TokenManager
-                okhttp3.Request.Builder requestBuilder = chain.request().newBuilder();
+    // Retrieve the AuthServiceInterface instance
+    fun getAuthService(context: Context): AuthServiceInterface {
+        return getClient(context).create(AuthServiceInterface::class.java)
+    }
 
-                // Add token to the header if it's available
-                if (token != null && !token.isEmpty()) {
-                    requestBuilder.addHeader("Authorization", "Bearer " + token);
-                }
+    // Retrieve the DashboardServiceInterface instance
+    fun getDashboardService(context: Context): DashboardServiceInterface {
+        return getClient(context).create(DashboardServiceInterface::class.java)
+    }
 
-                return chain.proceed(requestBuilder.build());
+    // Interceptor to add the token to request headers
+    private class AuthInterceptor(private val context: Context) : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val token = TokenManager(context).getToken() // Retrieve the token
+            val requestBuilder = chain.request().newBuilder()
+
+            // Add Authorization header if the token exists
+            if (!token.isNullOrEmpty()) {
+                Log.e("----------------", token )
+                requestBuilder.addHeader("Authorization", "Bearer $token")
             }
-        };
-    }
-    public static AuthServiceInterface getAuthService(Context context) {
-        return getClient(context).create(AuthServiceInterface.class);
-    }
 
-    public static DashboardServiceInterface getDashboardService(Context context) {
-        return getClient(context).create(DashboardServiceInterface.class);
+            return chain.proceed(requestBuilder.build())
+        }
     }
-
 }

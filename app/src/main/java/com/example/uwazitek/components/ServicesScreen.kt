@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -24,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.uwazitek.api.dto.HealthService
 
 @Composable
-fun ServicesScreen(paddingValues: NavHostController) {
+fun ServicesScreen(navController: NavHostController, bottomBar: @Composable () -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Sample data for services
@@ -33,44 +34,48 @@ fun ServicesScreen(paddingValues: NavHostController) {
         HealthService("Cardiologist", "Aga Khan University Hospital", "Nairobi", "9 AM - 5 PM", "$300", "0722-123-456", 4.8f),
         HealthService("Pediatrician", "Nairobi Hospital", "Nairobi", "10 AM - 4 PM", "$150", "0733-987-654", 4.5f)
     )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
 
-
-        TextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search Services", color = Color.Gray) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
-        )
-
-        // LazyColumn for services
-        LazyColumn(
+    // Use Scaffold to include BottomNavigationBar
+    Scaffold(
+        bottomBar = { bottomBar() } // Add the BottomNavigationBar
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-        )
-        {
-            items(services.filter {
-                it.name.contains(searchQuery, ignoreCase = true) || it.location.contains(searchQuery, ignoreCase = true)
-            }) { service ->
-                ServiceCard(service = service)
+                .padding(paddingValues) // Account for the bottom bar padding
+                .padding(16.dp)
+        ) {
+            TextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search Services", color = Color.Gray) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+            )
+
+            // LazyColumn for services
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(services.filter {
+                    it.name.contains(searchQuery, ignoreCase = true) || it.location.contains(searchQuery, ignoreCase = true)
+                }) { service ->
+                    ServiceCard(service = service)
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewServicesScreen() {
-    val navController = rememberNavController()
-    ServicesScreen(navController)
-}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewServicesScreen() {
+//    val navController = rememberNavController()
+//    ServicesScreen(navController)
+//}
 
 
 

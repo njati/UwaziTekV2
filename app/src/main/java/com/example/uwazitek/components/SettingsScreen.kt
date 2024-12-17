@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -40,27 +41,32 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 // Updated Settings screen function
-    @Composable
-    fun SettingsScreen(navController: NavController, paddingValues: PaddingValues) {
-        var showContactSupportPopup by remember { mutableStateOf(false) }
-        var showUpdatePasswordPopup by remember { mutableStateOf(false) }
-        var showUpdateEmailPopup by remember { mutableStateOf(false) }
-        var showUpdatePhonePopup by remember { mutableStateOf(false) }
-        var showChangeProfilePicPopup by remember { mutableStateOf(false) }
-        var showChatButton by remember { mutableStateOf(false) }
-        var message by remember { mutableStateOf("") }
-        var response by remember { mutableStateOf("") }
+@Composable
+fun SettingsScreen(
+    navController: NavController,
+    paddingValues: PaddingValues = PaddingValues(),
+    bottomBar: @Composable () -> Unit // Accept the BottomNavigationBar as a parameter
+) {
+    var showContactSupportPopup by remember { mutableStateOf(false) }
+    var showUpdatePasswordPopup by remember { mutableStateOf(false) }
+    var showUpdateEmailPopup by remember { mutableStateOf(false) }
+    var showUpdatePhonePopup by remember { mutableStateOf(false) }
+    var showChangeProfilePicPopup by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
 
+    Scaffold(
+        bottomBar = { bottomBar() }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues) // Account for bottom bar padding
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center // Center elements vertically
-        )
-        {
-            // Profile Picture at the Top Center
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Profile Picture
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -70,111 +76,46 @@ import androidx.navigation.compose.rememberNavController
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.firstsplashscreenimageone),                    contentDescription = "Profile Picture",
+                    painter = painterResource(R.drawable.firstsplashscreenimageone),
+                    contentDescription = "Profile Picture",
                     modifier = Modifier.size(100.dp)
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Contact Support with Confirmation Field
-            Button(onClick = { showContactSupportPopup = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6495ED))) {
+            // Buttons and Popups
+            Button(onClick = { showContactSupportPopup = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Contact Support")
             }
-            if (showContactSupportPopup) {
-                PopupDialog(
-                    onDismiss = { showContactSupportPopup = false },
-                    content = {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        )
-
-                        {
-                            Text("Chat with Support", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            TextField(
-                                value = "",
-                                onValueChange = {},
-                                placeholder = { Text("Type your message...") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = { /* Handle send message */ }) {
-                                Text("Send")
-                            }
-                        }
-
-                    }
-                )
-                showChatButton = true
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Update Password with Confirmation Field
-            Button(onClick = { showUpdatePasswordPopup = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6495ED))) {
+            Button(onClick = { showUpdatePasswordPopup = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Update Password")
             }
-            if (showUpdatePasswordPopup) {
-                PopupDialog(
-                    onDismiss = { showUpdatePasswordPopup = false },
-                    content = { PasswordUpdateContent() }
-                )
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Update Email with Confirmation Field
-            Button(onClick = { showUpdateEmailPopup = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6495ED))) {
+            Button(onClick = { showUpdateEmailPopup = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Update Email")
             }
-            if (showUpdateEmailPopup) {
-                PopupDialog(
-                    onDismiss = { showUpdateEmailPopup = false },
-                    content = { EmailUpdateContent() } // Adds confirmation field
-                )
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-            // Update Phone Number with Confirmation Field
-            Button(onClick = { showUpdatePhonePopup = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6495ED))) {
+            Button(onClick = { showUpdatePhonePopup = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Update Phone Number")
             }
-            if (showUpdatePhonePopup) {
-                PopupDialog(
-                    onDismiss = { showUpdatePhonePopup = false },
-                    content = { PhoneUpdateContent() } // Adds confirmation field
-                )
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-            val context = LocalContext.current
-            Button(onClick = {
-                TokenManager(context).logout(navController)
-            },
+            Button(
+                onClick = { TokenManager(context).logout(navController) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC0C0C0))) {
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC0C0C0))
+            ) {
                 Text("Logout")
             }
         }
-        }
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSettingsScreen() {
-    // Provide a mock NavController for preview
-    val navController = rememberNavController()
-    SettingsScreen(navController = navController, paddingValues = PaddingValues())
+    }
 }
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewSettingsScreen() {
+//    // Provide a mock NavController for preview
+//    val navController = rememberNavController()
+//    SettingsScreen(navController = navController, paddingValues = PaddingValues())
+//}

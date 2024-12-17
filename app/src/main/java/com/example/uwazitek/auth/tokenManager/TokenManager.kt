@@ -9,19 +9,19 @@ class TokenManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     companion object {
-        private const val KEY_TOKEN = "jwt_token"
+        private const val KEY_TOKEN = "access_token"
         private const val KEY_ISSUE_TIME = "issue_time"
         private const val TOKEN_EXPIRY_TIME = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
     }
 
     // Save the token and the issue time
-    fun saveToken(token: String) {
+    fun saveToken(access_token: String) {
         prefs.edit().apply {
-            putString(KEY_TOKEN, token)
+            putString(KEY_TOKEN, access_token)
             putLong(KEY_ISSUE_TIME, System.currentTimeMillis())
             apply()
         }
-        Log.d("TokenManager", "Token saved: $token")
+        Log.d("TokenManager", "Token saved: $access_token")
     }
 
     // Get the token if it hasn’t expired
